@@ -1,0 +1,82 @@
+.main {
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #1a3a5c;
+  margin: 0;
+}
+
+.refresh {
+  background: #1a3a5c;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.refresh:hover {
+  background: #254f7a;
+}
+
+.refresh:disabled {
+  background: #aaa;
+  cursor: default;
+}
+
+.updated {
+  font-size: 11px;
+  color: #888;
+  margin: 0 0 12px 0;
+}
+
+.error {
+  color: #c00;
+  font-size: 13px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.th {
+  background-color: #1a3a5c;
+  color: white;
+  text-align: left;
+  padding: 8px 12px;
+  font-weight: 600;
+}
+
+.label {
+  padding: 7px 12px;
+  border-bottom: 1px solid #e0e0e0;
+  color: #333;
+}
+
+.value {
+  padding: 7px 12px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: right;
+  color: #333;
+  font-variant-numeric: tabular-nums;
+}
+
+tr:nth-child(even) td {
+  background-color: #f5f8fc;
+}
