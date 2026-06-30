@@ -11,13 +11,19 @@ const pool = new Pool({
 
 export async function GET() {
   try {
-    const hedgeFunds = await pool.query(`SELECT DISTINCT hedge_fund FROM killshot_historical LIMIT 50`);
-    const purchaseTags = await pool.query(`SELECT DISTINCT tags FROM purchase LIMIT 50`);
-    const invoiceTags = await pool.query(`SELECT DISTINCT tags FROM invoice LIMIT 50`);
+    const purchaseUpbeat = await pool.query(`SELECT DISTINCT tags FROM purchase WHERE tags ILIKE '%upbeat%' LIMIT 20`);
+    const invoiceUpbeat = await pool.query(`SELECT DISTINCT tags FROM invoice WHERE tags ILIKE '%upbeat%' LIMIT 20`);
+    const hedgeFundCount = await pool.query(`SELECT COUNT(*) FROM killshot_historical`);
+    const hedgeFundUpbeat = await pool.query(`SELECT DISTINCT hedge_fund FROM killshot_historical WHERE hedge_fund ILIKE '%upbeat%' LIMIT 20`);
+    const accountUpbeat = await pool.query(`SELECT DISTINCT account FROM account_inventory_future_events_eventdate WHERE account ILIKE '%upbeat%' LIMIT 20`);
+    const pricerTeams = await pool.query(`SELECT DISTINCT inv_mgmt_team, pricing_team FROM pricer_dim WHERE inv_mgmt_team ILIKE '%upbeat%' OR pricing_team ILIKE '%upbeat%' LIMIT 20`);
     return Response.json({
-      hedgeFunds: hedgeFunds.rows,
-      purchaseTags: purchaseTags.rows,
-      invoiceTags: invoiceTags.rows,
+      purchaseUpbeat: purchaseUpbeat.rows,
+      invoiceUpbeat: invoiceUpbeat.rows,
+      hedgeFundTableRowCount: hedgeFundCount.rows,
+      hedgeFundUpbeat: hedgeFundUpbeat.rows,
+      accountUpbeat: accountUpbeat.rows,
+      pricerTeams: pricerTeams.rows,
     });
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
