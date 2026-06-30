@@ -11,13 +11,14 @@ const pool = new Pool({
 
 export async function GET() {
   try {
-    const result = await pool.query(`
-      SELECT table_name, column_name, data_type
-      FROM information_schema.columns
-      WHERE table_schema = 'public'
-      ORDER BY table_name, ordinal_position
-    `);
-    return Response.json({ columns: result.rows });
+    const hedgeFunds = await pool.query(`SELECT DISTINCT hedge_fund FROM killshot_historical LIMIT 50`);
+    const purchaseTags = await pool.query(`SELECT DISTINCT tags FROM purchase LIMIT 50`);
+    const invoiceTags = await pool.query(`SELECT DISTINCT tags FROM invoice LIMIT 50`);
+    return Response.json({
+      hedgeFunds: hedgeFunds.rows,
+      purchaseTags: purchaseTags.rows,
+      invoiceTags: invoiceTags.rows,
+    });
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
   }
