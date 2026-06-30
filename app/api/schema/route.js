@@ -11,18 +11,32 @@ const pool = new Pool({
 
 export async function GET() {
   const results = {};
-  const checks = [
-    ['schemas', `SELECT DISTINCT table_schema FROM information_schema.tables ORDER BY table_schema`],
-    ['tablesWithUpbeat', `SELECT table_schema, table_name FROM information_schema.tables WHERE table_name ILIKE '%upbeat%' ORDER BY table_schema, table_name`],
-    ['columnsWithUpbeat', `SELECT table_schema, table_name, column_name FROM information_schema.columns WHERE column_name ILIKE '%upbeat%' ORDER BY table_schema, table_name`],
+  const tables = [
+    ['marts_stg', 'upbeat_wh_purchase'],
+    ['marts_stg', 'upbeat_wh_invoice'],
+    ['marts_stg', 'upbeat_wh_invoice_line'],
+    ['marts_stg', 'stg_lbs_upbeat_purchase'],
+    ['marts_stg', 'stg_lbs_upbeat_sale'],
   ];
-  for (const [key, sql] of checks) {
+  for (const [schema, table] of tables) {
     try {
-      const r = await pool.query(sql);
-      results[key] = r.rows;
+      const r = await pool.query(
+        `SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = $1 AND table_name = $2 ORDER BY ordinal_position`,
+        [schema, table]
+      );
+      results[`${schema}.${table}`] = r.rows;
     } catch (err) {
-      results[key] = { error: err.message };
+      results[`${schema}.${table}`] = { error: err.message };
     }
   }
+  // also get a sample row from the two most promising ones
+  try {
+    const r = await pool.query(`SELECT * FROM marts_stg.upbeat_wh_purchase LIMIT 1`);
+    results['sample_purchase'] = r.rows;
+  } catch(err) { results['sample_purchase'] = { error: err.message }; }
+  try {
+    const r = await pool.query(`SELECT * FROM marts_stg.upbeat_wh_invoice LIMIT 1`);
+    results['sample_invoice'] = r.rows;
+  } catch(err) { results['sample_invoice'] = { error: err.message }; }
   return Response.json(results);
 }
