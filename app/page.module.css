@@ -111,5 +111,6 @@
 }
 
 tr:nth-child(even) td {
-  background-color: #f5f8fc;
+  background-color: #1a3a5c;
+  color: white;
 }
