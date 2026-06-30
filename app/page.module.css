@@ -110,7 +110,12 @@
   font-variant-numeric: tabular-nums;
 }
 
-tr:nth-child(even) td {
+tr:nth-child(odd) td {
   background-color: #1a3a5c;
+  color: white;
+}
+
+tr:nth-child(even) td {
+  background-color: #254f7a;
   color: white;
 }
