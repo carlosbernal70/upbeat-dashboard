@@ -12,16 +12,9 @@ const pool = new Pool({
 export async function GET() {
   const results = {};
   const checks = [
-    ['invoiceCustomer', `SELECT DISTINCT customer FROM invoice WHERE customer ILIKE '%upbeat%' LIMIT 20`],
-    ['invoiceNotes', `SELECT DISTINCT notes FROM invoice WHERE notes ILIKE '%upbeat%' LIMIT 20`],
-    ['purchaseNotes', `SELECT DISTINCT notes FROM purchase WHERE notes ILIKE '%upbeat%' LIMIT 20`],
-    ['purchaseExternalRef', `SELECT DISTINCT external_reference FROM purchase WHERE external_reference ILIKE '%upbeat%' LIMIT 20`],
-    ['invoiceExternalRef', `SELECT DISTINCT external_reference FROM invoice WHERE external_reference ILIKE '%upbeat%' LIMIT 20`],
-    ['eventTags', `SELECT DISTINCT tags FROM event WHERE tags ILIKE '%upbeat%' LIMIT 20`],
-    ['listingNotes', `SELECT DISTINCT internal_notes FROM listing WHERE internal_notes ILIKE '%upbeat%' LIMIT 20`],
-    ['killshotPricerTag', `SELECT DISTINCT pricer_tag FROM killshot_historical WHERE pricer_tag ILIKE '%upbeat%' LIMIT 20`],
-    ['killshotListingTags', `SELECT DISTINCT listing_tags FROM killshot_historical WHERE listing_tags ILIKE '%upbeat%' LIMIT 20`],
-    ['allInvoiceCustomers', `SELECT DISTINCT customer FROM invoice LIMIT 100`],
+    ['schemas', `SELECT DISTINCT table_schema FROM information_schema.tables ORDER BY table_schema`],
+    ['tablesWithUpbeat', `SELECT table_schema, table_name FROM information_schema.tables WHERE table_name ILIKE '%upbeat%' ORDER BY table_schema, table_name`],
+    ['columnsWithUpbeat', `SELECT table_schema, table_name, column_name FROM information_schema.columns WHERE column_name ILIKE '%upbeat%' ORDER BY table_schema, table_name`],
   ];
   for (const [key, sql] of checks) {
     try {
