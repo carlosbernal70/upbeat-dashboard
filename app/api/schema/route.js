@@ -12,11 +12,9 @@ const pool = new Pool({
 export async function GET() {
   const results = {};
   const tables = [
-    ['marts_stg', 'upbeat_wh_purchase'],
-    ['marts_stg', 'upbeat_wh_invoice'],
-    ['marts_stg', 'upbeat_wh_invoice_line'],
-    ['marts_stg', 'stg_lbs_upbeat_purchase'],
-    ['marts_stg', 'stg_lbs_upbeat_sale'],
+    ['marts_stg', 'upbeat_wh_inventory'],
+    ['raw_lobsang', 'upbeat_purchase'],
+    ['raw_lobsang', 'upbeat_sale'],
   ];
   for (const [schema, table] of tables) {
     try {
@@ -24,19 +22,26 @@ export async function GET() {
         `SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = $1 AND table_name = $2 ORDER BY ordinal_position`,
         [schema, table]
       );
-      results[`${schema}.${table}`] = r.rows;
+      results[`cols_${schema}.${table}`] = r.rows;
     } catch (err) {
-      results[`${schema}.${table}`] = { error: err.message };
+      results[`cols_${schema}.${table}`] = { error: err.message };
     }
   }
-  // also get a sample row from the two most promising ones
   try {
-    const r = await pool.query(`SELECT * FROM marts_stg.upbeat_wh_purchase LIMIT 1`);
-    results['sample_purchase'] = r.rows;
-  } catch(err) { results['sample_purchase'] = { error: err.message }; }
+    const r = await pool.query(`SELECT * FROM marts_stg.upbeat_wh_invoice_line LIMIT 2`);
+    results['sample_invoice_line'] = r.rows;
+  } catch(err) { results['sample_invoice_line'] = { error: err.message }; }
   try {
-    const r = await pool.query(`SELECT * FROM marts_stg.upbeat_wh_invoice LIMIT 1`);
-    results['sample_invoice'] = r.rows;
-  } catch(err) { results['sample_invoice'] = { error: err.message }; }
+    const r = await pool.query(`SELECT * FROM marts_stg.upbeat_wh_inventory LIMIT 1`);
+    results['sample_inventory'] = r.rows;
+  } catch(err) { results['sample_inventory'] = { error: err.message }; }
+  try {
+    const r = await pool.query(`SELECT * FROM raw_lobsang.upbeat_purchase LIMIT 1`);
+    results['sample_raw_purchase'] = r.rows;
+  } catch(err) { results['sample_raw_purchase'] = { error: err.message }; }
+  try {
+    const r = await pool.query(`SELECT * FROM raw_lobsang.upbeat_sale LIMIT 1`);
+    results['sample_raw_sale'] = r.rows;
+  } catch(err) { results['sample_raw_sale'] = { error: err.message }; }
   return Response.json(results);
 }
