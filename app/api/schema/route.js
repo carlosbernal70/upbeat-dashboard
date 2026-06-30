@@ -10,22 +10,26 @@ const pool = new Pool({
 });
 
 export async function GET() {
-  try {
-    const purchaseUpbeat = await pool.query(`SELECT DISTINCT tags FROM purchase WHERE tags ILIKE '%upbeat%' LIMIT 20`);
-    const invoiceUpbeat = await pool.query(`SELECT DISTINCT tags FROM invoice WHERE tags ILIKE '%upbeat%' LIMIT 20`);
-    const hedgeFundCount = await pool.query(`SELECT COUNT(*) FROM killshot_historical`);
-    const hedgeFundUpbeat = await pool.query(`SELECT DISTINCT hedge_fund FROM killshot_historical WHERE hedge_fund ILIKE '%upbeat%' LIMIT 20`);
-    const accountUpbeat = await pool.query(`SELECT DISTINCT account FROM account_inventory_future_events_eventdate WHERE account ILIKE '%upbeat%' LIMIT 20`);
-    const pricerTeams = await pool.query(`SELECT DISTINCT inv_mgmt_team, pricing_team FROM pricer_dim WHERE inv_mgmt_team ILIKE '%upbeat%' OR pricing_team ILIKE '%upbeat%' LIMIT 20`);
-    return Response.json({
-      purchaseUpbeat: purchaseUpbeat.rows,
-      invoiceUpbeat: invoiceUpbeat.rows,
-      hedgeFundTableRowCount: hedgeFundCount.rows,
-      hedgeFundUpbeat: hedgeFundUpbeat.rows,
-      accountUpbeat: accountUpbeat.rows,
-      pricerTeams: pricerTeams.rows,
-    });
-  } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
+  const results = {};
+  const checks = [
+    ['invoiceCustomer', `SELECT DISTINCT customer FROM invoice WHERE customer ILIKE '%upbeat%' LIMIT 20`],
+    ['invoiceNotes', `SELECT DISTINCT notes FROM invoice WHERE notes ILIKE '%upbeat%' LIMIT 20`],
+    ['purchaseNotes', `SELECT DISTINCT notes FROM purchase WHERE notes ILIKE '%upbeat%' LIMIT 20`],
+    ['purchaseExternalRef', `SELECT DISTINCT external_reference FROM purchase WHERE external_reference ILIKE '%upbeat%' LIMIT 20`],
+    ['invoiceExternalRef', `SELECT DISTINCT external_reference FROM invoice WHERE external_reference ILIKE '%upbeat%' LIMIT 20`],
+    ['eventTags', `SELECT DISTINCT tags FROM event WHERE tags ILIKE '%upbeat%' LIMIT 20`],
+    ['listingNotes', `SELECT DISTINCT internal_notes FROM listing WHERE internal_notes ILIKE '%upbeat%' LIMIT 20`],
+    ['killshotPricerTag', `SELECT DISTINCT pricer_tag FROM killshot_historical WHERE pricer_tag ILIKE '%upbeat%' LIMIT 20`],
+    ['killshotListingTags', `SELECT DISTINCT listing_tags FROM killshot_historical WHERE listing_tags ILIKE '%upbeat%' LIMIT 20`],
+    ['allInvoiceCustomers', `SELECT DISTINCT customer FROM invoice LIMIT 100`],
+  ];
+  for (const [key, sql] of checks) {
+    try {
+      const r = await pool.query(sql);
+      results[key] = r.rows;
+    } catch (err) {
+      results[key] = { error: err.message };
+    }
   }
+  return Response.json(results);
 }
