@@ -10,7 +10,40 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 4px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dateLabel {
+  font-size: 13px;
+  color: #555;
+}
+
+.datePicker {
+  font-size: 13px;
+  padding: 5px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.applyBtn {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.applyBtn:hover { background: #388e3c; }
+.applyBtn:disabled { background: #aaa; cursor: default; }
 
 .title {
   font-size: 22px;
